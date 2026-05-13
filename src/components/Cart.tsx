@@ -1,15 +1,31 @@
 import { useCart } from "../lib/CartContext";
 import { products } from "../data/mockData";
-import { X, Plus, Minus, ShoppingBag } from "lucide-react";
+import { X, Plus, Minus, ShoppingBag, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
+import { useState } from "react";
 
 export function Cart() {
   const { items, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
   const navigate = useNavigate();
+  const [isCheckout, setIsCheckout] = useState(false);
 
-  const handleCheckout = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    address: "",
+    payment: "COD"
+  });
+
+  const handleOpenCheckout = () => {
+    setIsCheckout(true);
+  };
+
+  const handleCheckoutSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    alert("Đơn hàng đã được thông báo về mail của bạn: hovaten0980@gmail.com");
     clearCart();
+    setIsCheckout(false);
     setIsCartOpen(false);
     navigate("/thank-you");
   };
@@ -34,58 +50,110 @@ export function Cart() {
           >
             <div className="flex justify-between items-center p-6 border-b border-rose-100">
               <h2 className="text-lg font-serif font-semibold text-zinc-900 flex items-center gap-2">
-                <ShoppingBag size={20} /> Giỏ hàng ({items.length})
+                {isCheckout ? (
+                  <>
+                    <button onClick={() => setIsCheckout(false)} className="text-zinc-500 hover:text-rose-500 mr-2">
+                      <ArrowLeft size={20} />
+                    </button>
+                    Thanh toán
+                  </>
+                ) : (
+                  <>
+                    <ShoppingBag size={20} /> Giỏ hàng ({items.length})
+                  </>
+                )}
               </h2>
               <button
-                onClick={() => setIsCartOpen(false)}
+                onClick={() => {
+                  setIsCartOpen(false);
+                  setTimeout(() => setIsCheckout(false), 300);
+                }}
                 className="text-zinc-500 hover:text-rose-500 transition-colors"
               >
                 <X size={24} />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              {items.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-zinc-500">
-                  <ShoppingBag size={48} className="text-zinc-200 mb-4" />
-                  <p className="text-sm">Giỏ hàng của bạn đang trống</p>
-                  <button 
-                    onClick={() => setIsCartOpen(false)}
-                    className="mt-4 text-xs font-bold text-rose-400 uppercase tracking-widest hover:text-rose-500 underline underline-offset-4"
-                  >
-                    Tiếp tục mua sắm
-                  </button>
-                </div>
-              ) : (
-                items.map((item) => {
-                  const product = products.find((p) => p.id === item.productId);
-                  if (!product) return null;
-                  return (
-                    <div key={item.productId} className="flex gap-4 items-center">
-                      <div className="w-20 h-20 bg-[#FDE2E4] p-1 shrink-0 rounded-sm">
-                        <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover rounded-sm" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-xs font-bold uppercase text-zinc-800 line-clamp-1">{product.name}</h3>
-                        <p className="text-xs text-rose-400 mt-1 font-semibold">{product.price}</p>
-                        <div className="flex items-center gap-3 mt-2">
-                          <div className="flex items-center border border-zinc-200 rounded-sm">
-                            <button onClick={() => updateQuantity(item.productId, item.quantity - 1)} className="p-1 text-zinc-500 hover:bg-zinc-100">
-                              <Minus size={14} />
-                            </button>
-                            <span className="text-xs font-semibold px-2 w-6 text-center">{item.quantity}</span>
-                            <button onClick={() => updateQuantity(item.productId, item.quantity + 1)} className="p-1 text-zinc-500 hover:bg-zinc-100">
-                              <Plus size={14} />
-                            </button>
-                          </div>
-                          <button onClick={() => removeFromCart(item.productId)} className="text-[10px] uppercase text-zinc-400 underline hover:text-rose-400">
-                            Xóa
-                          </button>
-                        </div>
-                      </div>
+            <div className="flex-1 overflow-y-auto p-6">
+              {isCheckout ? (
+                <form id="checkout-form" onSubmit={handleCheckoutSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-2">Họ tên</label>
+                    <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 outline-none focus:border-rose-300 text-sm" placeholder="Nguyễn Văn A" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-2">Số điện thoại</label>
+                    <input required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 outline-none focus:border-rose-300 text-sm" placeholder="0901234567" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-2">Địa chỉ giao hàng</label>
+                    <textarea required rows={3} value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 outline-none focus:border-rose-300 text-sm resize-none" placeholder="123 Đường Tự Do, Phường 1, Huyện 2, TP.HCM" />
+                  </div>
+                  
+                  <div className="pt-2">
+                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-3">Phương thức thanh toán</label>
+                    <div className="space-y-3">
+                      {["COD", "Visa Card", "Paypal", "Apple Pay"].map((method) => (
+                        <label key={method} className="flex items-center gap-3 p-3 border border-zinc-200 rounded-sm cursor-pointer hover:bg-zinc-50">
+                          <input 
+                            type="radio" 
+                            name="payment" 
+                            value={method} 
+                            checked={formData.payment === method}
+                            onChange={(e) => setFormData({...formData, payment: e.target.value})}
+                            className="text-rose-400 focus:ring-rose-400 w-4 h-4"
+                          />
+                          <span className="text-sm text-zinc-800 font-medium">{method}</span>
+                        </label>
+                      ))}
                     </div>
-                  );
-                })
+                  </div>
+                </form>
+              ) : (
+                <div className="space-y-6 h-full">
+                  {items.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full text-zinc-500">
+                      <ShoppingBag size={48} className="text-zinc-200 mb-4" />
+                      <p className="text-sm">Giỏ hàng của bạn đang trống</p>
+                      <button 
+                        onClick={() => setIsCartOpen(false)}
+                        className="mt-4 text-xs font-bold text-rose-400 uppercase tracking-widest hover:text-rose-500 underline underline-offset-4"
+                      >
+                        Tiếp tục mua sắm
+                      </button>
+                    </div>
+                  ) : (
+                    items.map((item) => {
+                      const product = products.find((p) => p.id === item.productId);
+                      if (!product) return null;
+                      return (
+                        <div key={item.productId} className="flex gap-4 items-center">
+                          <div className="w-20 h-20 bg-[#FDE2E4] p-1 shrink-0 rounded-sm">
+                            <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover rounded-sm" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-xs font-bold uppercase text-zinc-800 line-clamp-1">{product.name}</h3>
+                            <p className="text-xs text-rose-400 mt-1 font-semibold">{product.price}</p>
+                            <div className="flex items-center gap-3 mt-2">
+                              <div className="flex items-center border border-zinc-200 rounded-sm">
+                                <button onClick={() => updateQuantity(item.productId, item.quantity - 1)} className="p-1 text-zinc-500 hover:bg-zinc-100">
+                                  <Minus size={14} />
+                                </button>
+                                <span className="text-xs font-semibold px-2 w-6 text-center">{item.quantity}</span>
+                                <button onClick={() => updateQuantity(item.productId, item.quantity + 1)} className="p-1 text-zinc-500 hover:bg-zinc-100">
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                              <button onClick={() => removeFromCart(item.productId)} className="text-[10px] uppercase text-zinc-400 underline hover:text-rose-400">
+                                Xóa
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
               )}
             </div>
 
@@ -97,12 +165,22 @@ export function Cart() {
                     {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(cartTotal)}
                   </span>
                 </div>
-                <button
-                  onClick={handleCheckout}
-                  className="w-full bg-zinc-900 text-white py-4 text-xs uppercase tracking-widest font-bold hover:bg-rose-400 transition-colors shadow-lg hover:shadow-rose-400/30"
-                >
-                  Đặt Mua Ngay
-                </button>
+                {isCheckout ? (
+                  <button
+                    type="submit"
+                    form="checkout-form"
+                    className="w-full bg-rose-500 text-white py-4 text-xs uppercase tracking-widest font-bold hover:bg-rose-600 transition-colors shadow-lg hover:shadow-rose-400/30"
+                  >
+                    Xác nhận đặt hàng
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleOpenCheckout}
+                    className="w-full bg-zinc-900 text-white py-4 text-xs uppercase tracking-widest font-bold hover:bg-rose-400 transition-colors shadow-lg hover:shadow-rose-400/30"
+                  >
+                    Đặt Mua Ngay
+                  </button>
+                )}
               </div>
             )}
           </motion.div>

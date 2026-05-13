@@ -1,23 +1,31 @@
 import { useState } from "react";
 import { Send, Star } from "lucide-react";
 import { motion } from "motion/react";
+import { useReviews } from "../lib/ReviewContext";
 
 export function FeedbackForm() {
+  const { addReview } = useReviews();
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
+  const [name, setName] = useState("");
   const [feedback, setFeedback] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (rating === 0) return;
+    if (rating === 0 || !name.trim()) return;
     
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitted(true);
-      setRating(0);
-      setFeedback("");
-    }, 500);
+    addReview({
+      name,
+      role: "Khách hàng",
+      rating,
+      content: feedback || "Sản phẩm tuyệt vời!"
+    });
+
+    setIsSubmitted(true);
+    setRating(0);
+    setFeedback("");
+    setName("");
   };
 
   return (
@@ -51,50 +59,64 @@ export function FeedbackForm() {
               </button>
             </motion.div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="flex flex-col items-center">
-                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-700 mb-4">Bạn cảm thấy trang web thế nào?</p>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      type="button"
-                      key={star}
-                      className="transition-colors cursor-pointer text-2xl"
-                      onClick={() => setRating(star)}
-                      onMouseEnter={() => setHover(star)}
-                      onMouseLeave={() => setHover(rating)}
-                    >
-                      <Star 
-                        className={`w-8 h-8 ${star <= (hover || rating) ? "fill-rose-400 text-rose-400" : "text-zinc-200"}`} 
-                      />
-                    </button>
-                  ))}
+             <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 mb-2">
+                    Tên của bạn *
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Nhập tên của bạn..."
+                    className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:border-rose-300 focus:ring-1 focus:ring-rose-300 transition-all text-zinc-800"
+                  />
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 mb-2">
-                  Góp ý thêm (Không bắt buộc)
-                </label>
-                <textarea
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  rows={4}
-                  placeholder="Chia sẻ thêm ý kiến của bạn về sản phẩm và dịch vụ..."
-                  className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:border-rose-300 focus:ring-1 focus:ring-rose-300 transition-all text-zinc-800 resize-none"
-                />
-              </div>
+                <div className="flex flex-col items-center pt-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-zinc-700 mb-4">Bạn đánh giá dịch vụ bao nhiêu sao? *</p>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        type="button"
+                        key={star}
+                        className="transition-colors cursor-pointer text-2xl"
+                        onClick={() => setRating(star)}
+                        onMouseEnter={() => setHover(star)}
+                        onMouseLeave={() => setHover(rating)}
+                      >
+                        <Star 
+                          className={`w-8 h-8 ${star <= (hover || rating) ? "fill-rose-400 text-rose-400" : "text-zinc-200"}`} 
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-              <div className="text-center pt-2">
-                <button
-                  type="submit"
-                  disabled={rating === 0}
-                  className="px-8 py-3 bg-zinc-900 text-white rounded-full text-xs font-bold uppercase tracking-widest hover:bg-rose-400 disabled:opacity-50 disabled:hover:bg-zinc-900 transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5"
-                >
-                  Gửi Đánh Giá
-                </button>
-              </div>
-            </form>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 mb-2">
+                    Ý kiến của bạn (Không bắt buộc)
+                  </label>
+                  <textarea
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                    rows={4}
+                    placeholder="Chia sẻ thêm ý kiến của bạn về sản phẩm và dịch vụ..."
+                    className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:border-rose-300 focus:ring-1 focus:ring-rose-300 transition-all text-zinc-800 resize-none"
+                  />
+                </div>
+
+                <div className="text-center pt-2">
+                  <button
+                    type="submit"
+                    disabled={rating === 0 || !name.trim()}
+                    className="px-8 py-3 bg-zinc-900 text-white rounded-full text-xs font-bold uppercase tracking-widest hover:bg-rose-400 disabled:opacity-50 disabled:hover:bg-zinc-900 transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5"
+                  >
+                    Gửi Đánh Giá
+                  </button>
+                </div>
+              </form>
           )}
         </div>
       </div>

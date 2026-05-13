@@ -3,11 +3,13 @@ import { motion } from "motion/react";
 import { ArrowRight, Star, CheckCircle, Shield, Award, Heart } from "lucide-react";
 import { products } from "../data/mockData";
 import { FeedbackForm } from "../components/FeedbackForm";
+import { useReviews } from "../lib/ReviewContext";
 
 import { useNavigate } from "react-router-dom";
 
 export function Home() {
   const navigate = useNavigate();
+  const { reviews } = useReviews();
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -184,7 +186,14 @@ export function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <img src="https://images.unsplash.com/photo-1596755389378-c5b9ced0c6d5?auto=format&fit=crop&q=80&w=800" alt="Makeup Texture" className="rounded-3xl shadow-xl" />
+              <video 
+                src="/vd-ofelia.mp4" 
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+                className="w-full rounded-3xl shadow-xl object-cover aspect-[4/5] md:aspect-auto" 
+              />
             </div>
             <div>
               <h2 className="text-3xl md:text-4xl font-serif text-gray-900 mb-6">Trải Nghiệm Sự Khác Biệt</h2>
@@ -234,47 +243,23 @@ export function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-serif mb-16">Khách Hàng Nói Gì Về OFÉLIA</h2>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-pink-800/50 p-8 rounded-3xl backdrop-blur-sm border border-pink-700 text-left transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-pink-900/50 hover:bg-pink-800/80">
-              <div className="flex text-yellow-400 mb-4">
-                <Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" />
-              </div>
-              <p className="text-pink-100 italic mb-6">"Lolli Liquid Blush màu Summery lên da cực kỳ tây và trong trẻo. Mình dùng từ sáng đến chiều vẫn không bị trôi hay xuống tone."</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-pink-400 flex items-center justify-center font-bold">M</div>
-                <div>
-                  <p className="font-semibold text-sm">Minh Anh</p>
-                  <p className="text-xs text-pink-300">Nhân viên văn phòng</p>
+            {reviews.map((review) => (
+              <div key={review.id} className="bg-pink-800/50 p-8 rounded-3xl backdrop-blur-sm border border-pink-700 text-left transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-pink-900/50 hover:bg-pink-800/80">
+                <div className="flex text-yellow-400 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={16} fill={i < review.rating ? "currentColor" : "none"} className={i >= review.rating ? "text-pink-700" : ""} />
+                  ))}
+                </div>
+                <p className="text-pink-100 italic mb-6">"{review.content}"</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-pink-400 flex items-center justify-center font-bold text-white">{review.initials}</div>
+                  <div>
+                    <p className="font-semibold text-sm">{review.name}</p>
+                    <p className="text-xs text-pink-300">{review.role}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="bg-pink-800/50 p-8 rounded-3xl backdrop-blur-sm border border-pink-700 text-left transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-pink-900/50 hover:bg-pink-800/80">
-              <div className="flex text-yellow-400 mb-4">
-                <Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" />
-              </div>
-              <p className="text-pink-100 italic mb-6">"Chất son của MistyNow thực sự làm mình bất ngờ. Mỏng nhẹ như nước nhưng độ che phủ cực tốt, không hề khô môi."</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-pink-400 flex items-center justify-center font-bold">H</div>
-                <div>
-                  <p className="font-semibold text-sm">Hương Mai</p>
-                  <p className="text-xs text-pink-300">Beauty Blogger</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-pink-800/50 p-8 rounded-3xl backdrop-blur-sm border border-pink-700 text-left transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-pink-900/50 hover:bg-pink-800/80">
-              <div className="flex text-yellow-400 mb-4">
-                <Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" />
-              </div>
-              <p className="text-pink-100 italic mb-6">"Thiết kế packaging của OFÉLIA lúc nào cũng làm mình mê mẩn. Mua làm quà tặng bạn bè ai cũng khen sang trọng."</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-pink-400 flex items-center justify-center font-bold">T</div>
-                <div>
-                  <p className="font-semibold text-sm">Trang Nhung</p>
-                  <p className="text-xs text-pink-300">Sinh viên</p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>

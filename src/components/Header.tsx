@@ -23,7 +23,6 @@ export function Header() {
             <a href="/#about" className="text-[11px] font-medium text-zinc-500 uppercase tracking-widest hover:text-rose-400 transition-colors">Về Chúng Tôi</a>
             <a href="/#products" className="text-[11px] font-medium text-zinc-500 uppercase tracking-widest hover:text-rose-400 transition-colors">Sản Phẩm</a>
             <a href="/#why-us" className="text-[11px] font-medium text-zinc-500 uppercase tracking-widest hover:text-rose-400 transition-colors">Điểm Nổi Bật</a>
-            <a href="/#process" className="text-[11px] font-medium text-zinc-500 uppercase tracking-widest hover:text-rose-400 transition-colors">Quy Trình</a>
             <a href="/#testimonials" className="text-[11px] font-medium text-zinc-500 uppercase tracking-widest hover:text-rose-400 transition-colors">Đánh Giá</a>
           </nav>
 

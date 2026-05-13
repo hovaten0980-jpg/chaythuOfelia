@@ -16,6 +16,7 @@ import { ThankYou } from "./pages/ThankYou";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { CartProvider } from "./lib/CartContext";
+import { ReviewProvider } from "./lib/ReviewContext";
 
 // ScrollToTop component to handle navigating between pages
 function ScrollToTop() {
@@ -29,24 +30,26 @@ function ScrollToTop() {
 export default function App() {
   return (
     <Router>
-      <CartProvider>
-        <ScrollToTop />
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/policy/:id" element={<Policy />} />
-              <Route path="/thank-you" element={<ThankYou />} />
-            </Routes>
-          </main>
-          <Footer />
-          <ChatBox />
-          <Cart />
-        </div>
-      </CartProvider>
+      <ReviewProvider>
+        <CartProvider>
+          <ScrollToTop />
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-grow">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/policy/:id" element={<Policy />} />
+                <Route path="/thank-you" element={<ThankYou />} />
+              </Routes>
+            </main>
+            <Footer />
+            <ChatBox />
+            <Cart />
+          </div>
+        </CartProvider>
+      </ReviewProvider>
     </Router>
   );
 }
